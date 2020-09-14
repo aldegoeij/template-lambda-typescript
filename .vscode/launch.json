@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Invoke HelloWorld",
+      "cwd": "${workspaceFolder}/",
+      "program": "${workspaceFolder}/node_modules/.bin/serverless",
+      "args": [
+        "invoke",
+        "local",
+        "-f",
+        "helloWorld",
+        "-p",
+        "${workspaceFolder}/tests/event.json",
+        "-x",
+        "${workspaceFolder}/tests/context.json"
+      ],
+      "env": {
+        "_X_AMZN_TRACE_ID": "Root=localDebuggingRunTracing;Sampled=0",
+        "AWS_DEFAULT_REGION": "eu-west-1",
+        "AWS_PROFILE": "YOUR_STG_OR_DEV_PROFILE_GOES_HERE",
+        "AWS_SDK_LOAD_CONFIG": "true",
+        "NODE_ENV": "development",
+        "SENTRY_DEBUG": "true",
+        "SLS_DEBUG": "*"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

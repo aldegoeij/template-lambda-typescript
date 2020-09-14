@@ -1,0 +1,4 @@
+domain:
+  domainName: api.stg.your_domain.com
+  stage: ${self:provider.stage}
+  basePath: ${self:service}

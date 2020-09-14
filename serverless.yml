@@ -1,0 +1,99 @@
+service: SERVICE-NAME
+
+frameworkVersion: ">=2.0.0"
+enableLocalInstallationFallback: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'stg'} # Set the default stage used. Default is 'stg'
+  region: ${opt:region, 'eu-west-1'} # Overwrite the default region used. Default is Europe :muscle:
+  stackName: ${self:service}-stack
+  apiName: ${self:service}
+  websocketsApiName: ${self:service}
+  memorySize: 256
+  timeout: 15
+  logRetentionInDays: 14
+  deploymentBucket:
+    serverSideEncryption: AES256
+    blockPublicAccess: true
+    tags:
+      ServiceName: ${self:service}
+      DeployedThru: Serverless
+  # Instead of 'role' we use `serverless-iam-roles-per-function`
+  iamRoleStatements: ${file(infra/${self:provider.stage}/iam_roles.yml):provider}
+  environment:
+    SERVICE_NAME: ${self:service}
+    STAGE: ${self:provider.stage}
+  # Highly likely you want a regional endpoint for your API:
+  endpointType: regional
+  stackTags:
+    ServiceName: ${self:service}
+  # List of existing Amazon SNS topics in the same region where notifications about stack events are sent.
+  notificationArns:
+    - null
+  tracing:
+    apiGateway: true
+    lambda: true
+  logs:
+    restApi: # Optional configuration which specifies if API Gateway logs are used. This can either be set to `true` to use defaults, or configured via subproperties.
+      accessLogging: true # Optional configuration which enables or disables access logging. Defaults to true.
+      format: '{"accountId":"$context.accountId","apiId":"$context.apiId","authorizer":{"claims":"$context.authorizer.claims","principalId":"$context.authorizer.principalId","property":"$context.authorizer.property","integrationLatency":"$context.authorizer.integrationLatency"},"awsEndpointRequestId":"$context.awsEndpointRequestId","domainName":"$context.domainName","domainPrefix":"$context.domainPrefix","error":{"message":"$context.error.message","messageString":"$context.error.messageString","responseType":"$context.error.responseType","validationErrorString":"$context.error.validationErrorString"},"extendedRequestId":"$context.extendedRequestId","httpMethod":"$context.httpMethod","identity":{"accountId":"$context.identity.accountId","apiKey":"$context.identity.apiKey","apiKeyId":"$context.identity.apiKeyId","caller":"$context.identity.caller","cognitoAuthenticationProvider":"$context.identity.cognitoAuthenticationProvider","cognitoAuthenticationType":"$context.identity.cognitoAuthenticationType","cognitoIdentityId":"$context.identity.cognitoIdentityId","cognitoIdentityPoolId":"$context.identity.cognitoIdentityPoolId","principalOrgId":"$context.identity.principalOrgId","sourceIp":"$context.identity.sourceIp","user":"$context.identity.user","userAgent":"$context.identity.userAgent","userArn":"$context.identity.userArn"},"path":"$context.path","protocol":"$context.protocol","requestId":"$context.requestId","requestOverride":{"header":"$context.requestOverride.header","path":"$context.requestOverride.path","querystring":"$context.requestOverride.querystring"},"responseOverride":{"header":"$context.responseOverride.header","status":"$context.responseOverride.status"},"requestTime":"$context.requestTime","requestTimeEpoch":"$context.requestTimeEpoch","resourceId":"$context.resourceId","resourcePath":"$context.resourcePath","stage":"$context.stage","wafResponseCode":"$context.wafResponseCode","webaclArn":"$context.webaclArn","xrayTraceId":"$context.xrayTraceId","integrationLatency":"$context.integrationLatency","integrationStatus":"$context.integrationStatus","responseLatency":"$context.responseLatency","responseLength":"$context.responseLength","status":"$context.status"}|' # Optional configuration which specifies the log format to use for access logging.
+      executionLogging: true # Optional configuration which enables or disables execution logging. Defaults to true.
+      level: INFO # Optional configuration which specifies the log level to use for execution logging. May be set to either INFO or ERROR.
+      fullExecutionData: true
+  websocket:
+    level: INFO
+  # Optional, whether to write CloudWatch logs for custom resource lambdas as added by the framework
+  frameworkLambda: true
+
+package:
+  exclude:
+    - .env
+    - coverage/**
+    - tests
+    - docs
+  individually: true
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-pseudo-parameters
+  - serverless-iam-roles-per-function
+  - serverless-domain-manager
+  - serverless-associate-waf
+  - serverless-plugin-log-subscription
+  - serverless-offline
+
+custom:
+  # Base Path Mapping
+  customDomain: ${file(infra/${self:provider.stage}/api_domain.yml):domain}
+  # Web Application Firewall
+  associateWaf: ${file(infra/${self:provider.stage}/waf.yml):waf}
+  # DataDog logging
+  logSubscription:
+    enabled: true
+    destinationArn: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:YOUR_LOGGING_FUNCTION_OR_FIREHOSE
+  webpack:
+    packager: yarn
+
+functions:
+  helloWorld:
+    handler: src/handler.hello
+    name: ${self:service}-hello-world
+    description: Hello world template description
+    memorySize: 256
+    reservedConcurrency: 5
+    timeout: 15
+    iamRoleStatementsInherit: true
+    iamRoleStatements: ${file(infra/${self:provider.stage}/iam_roles.yml):helloWorld}
+    onError: ${self:resources.Resources.ServiceDeadLetterQueue.Arn}
+    environment:
+      HELLO_WORLD: hello!
+    events:
+      - http:
+          path: /hello
+          method: GET
+
+resources:
+  Resources:
+    ServiceDeadLetterQueue: ${file(infra/${self:provider.stage}/sqs_dlq.yml):queue}

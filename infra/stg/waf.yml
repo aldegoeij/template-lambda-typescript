@@ -1,0 +1,2 @@
+waf:
+  name: some-waf-${self:provider.stage}-regional

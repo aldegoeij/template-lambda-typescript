@@ -1,0 +1,4 @@
+queue:
+  Type: "AWS::SQS::Queue"
+  Properties:
+    QueueName: "MyQueue"

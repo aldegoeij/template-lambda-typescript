@@ -1,0 +1,31 @@
+{
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "yaml.customTags": [
+    "!And",
+    "!If",
+    "!Not",
+    "!Equals",
+    "!Or",
+    "!FindInMap sequence",
+    "!Base64",
+    "!Cidr",
+    "!Ref",
+    "!Sub",
+    "!GetAtt",
+    "!GetAZs",
+    "!ImportValue",
+    "!Select",
+    "!Select sequence",
+    "!Split",
+    "!Join sequence"
+  ],
+  "yaml.format.enable": true,
+  "vsicons.associations.folders": [
+    { "icon": "aws", "extensions": ["infra"], "format": "svg" }
+  ],
+  "git.autofetch": true,
+  "git.fetchOnPull": true
+}

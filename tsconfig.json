@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "es5",
+    "outDir": ".build",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "lib": ["es2015", "esnext.asynciterable", "esnext"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "typeRoots": ["./typings", "./node_modules/@types"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js"],
+  "exclude": [
+    ".serverless",
+    ".vscode",
+    ".webpack",
+    "docs",
+    "infra",
+    "tests",
+    "typings",
+    "node_modules"
+  ]
+}

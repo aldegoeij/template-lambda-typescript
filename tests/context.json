@@ -1,0 +1,9 @@
+{
+  "functionName": "FakeLocalFunctioName",
+  "functionVersion": "FakeLocalFunctionVersion",
+  "invokedFunctionArn": "FakeLocalFunctionArn",
+  "memoryLimitInMB": "4096",
+  "awsRequestId": "FakeLocalRequestId",
+  "logGroupName": "FakeLocalLogGroupName",
+  "logStreamName": "FakeLocalLogStreamName"
+}
