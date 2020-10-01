@@ -1,2 +1,4 @@
 waf:
   name: some-waf-${self:provider.stage}-regional
+  # Values: Regional = v1, V2 = ... v2
+  version: Regional

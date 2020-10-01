@@ -22,6 +22,9 @@
         "AWS_DEFAULT_REGION": "eu-west-1",
         "AWS_PROFILE": "YOUR_STG_OR_DEV_PROFILE_GOES_HERE",
         "AWS_SDK_LOAD_CONFIG": "true",
+        "AWS_XRAY_CONTEXT_MISSING": "LOG_ERROR",
+        "AWS_XRAY_DISABLE": "true",
+        "AWS_XRAY_TRACING_NAME": "debug-graphql-api",
         "NODE_ENV": "development",
         "SENTRY_DEBUG": "true",
         "SLS_DEBUG": "*"

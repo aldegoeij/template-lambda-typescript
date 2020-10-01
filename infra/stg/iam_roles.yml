@@ -1,15 +1,31 @@
 provider:
   - Effect: "Allow"
+    Sid: AllowServiceLogToCloudWatch
     Action:
       - logs:CreateLogGroup
       - logs:CreateLogStream
       - logs:PutLogEvents
     Resource: "*"
   - Effect: "Allow"
+    Sid: AllowServiceTraceToXRay
     Action:
       - xray:PutTelemetryRecords
       - xray:PutTraceSegments
     Resource: "*"
+  - Effect: "Allow"
+    Sid: "AllowServiceGetSecretAccess"
+    Action:
+      - secretsmanager:DescribeSecret
+      - secretsmanager:GetSecretValue
+    Resource:
+      Fn::Join:
+        - "/"
+        - - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:parameter"
+          - ${self:service}
+          - "*"
+    Condition:
+      StringEquals:
+        secretsmanager:ResourceTag/Service: ${self:service}
 
 helloWorld:
   - Effect: "Allow"

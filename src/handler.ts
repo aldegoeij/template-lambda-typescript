@@ -1,17 +1,18 @@
 import { APIGatewayEvent, Context, APIGatewayProxyCallback } from "aws-lambda"
 
-import * as Sentry from "@sentry/serverless"
-
-Sentry.init({
-  dsn: "https://examplePublicKey@o0.ingest.sentry.io/0",
-})
+import wrapper from "./wrapper"
 
 const yourHandler = async (
   event: APIGatewayEvent,
   context: Context,
-  callback: APIGatewayProxyCallback,
+  _: APIGatewayProxyCallback,
 ) => {
-  return "hello :wave:!"
+  console.debug(event)
+  console.debug(JSON.stringify(context))
+  return {
+    body: JSON.stringify({ data: `Hello world!` }),
+    statusCode: 200,
+  }
 }
 
-export default Sentry.AWSLambda.wrapHandler(yourHandler)
+export default wrapper(yourHandler)

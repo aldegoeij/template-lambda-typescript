@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "target": "es5",
+    "target": "es6",
     "outDir": ".build",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -9,7 +9,7 @@
     "alwaysStrict": true,
     "esModuleInterop": true,
     "baseUrl": ".",
-    "lib": ["es2015", "esnext.asynciterable", "esnext"],
+    "lib": ["es6", "esnext.asynciterable", "esnext"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -17,8 +17,7 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "typeRoots": ["./typings", "./node_modules/@types"]
+    "strict": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js"],
   "exclude": [

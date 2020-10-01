@@ -1,7 +1,7 @@
+domain: DOMAIN-NAME
 service: SERVICE-NAME
 
 frameworkVersion: ">=2.0.0"
-enableLocalInstallationFallback: true
 
 provider:
   name: aws
@@ -23,12 +23,22 @@ provider:
   # Instead of 'role' we use `serverless-iam-roles-per-function`
   iamRoleStatements: ${file(infra/${self:provider.stage}/iam_roles.yml):provider}
   environment:
-    SERVICE_NAME: ${self:service}
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    DD_API_KEY: ${env:DD_API_KEY}
+    DD_SITE: ${env:DD_SITE}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'DEBUG'}
+    SERVICE: ${self:service}
     STAGE: ${self:provider.stage}
+    SENTRY_DSN: https://yoursentryprojectDSNurlgoeshere
+    SENTRY_LOG_LEVEL: ${env:LOG_LEVEL, 'DEBUG'}
   # Highly likely you want a regional endpoint for your API:
   endpointType: regional
+  # These tags should be populated to all resources
   stackTags:
-    ServiceName: ${self:service}
+    Domain: ${self:domain}
+    Service: ${self:service}
+    CreatedBy: serverless
+    Stage: ${self:provider.stage}
   # List of existing Amazon SNS topics in the same region where notifications about stack events are sent.
   notificationArns:
     - null
@@ -49,31 +59,27 @@ provider:
 
 package:
   exclude:
-    - .env
-    - coverage/**
-    - tests
+    - .**
+    - coverage
     - docs
+    - infra
+    - tests
   individually: true
 
 plugins:
-  - serverless-plugin-typescript
   - serverless-pseudo-parameters
   - serverless-iam-roles-per-function
   - serverless-domain-manager
   - serverless-associate-waf
-  - serverless-plugin-log-subscription
   - serverless-offline
 
 custom:
-  # Base Path Mapping
+  # AWS API Gateway Base Path Mapping
   customDomain: ${file(infra/${self:provider.stage}/api_domain.yml):domain}
   # Web Application Firewall
   associateWaf: ${file(infra/${self:provider.stage}/waf.yml):waf}
-  # DataDog logging
-  logSubscription:
-    enabled: true
-    destinationArn: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:YOUR_LOGGING_FUNCTION_OR_FIREHOSE
-  webpack:
+  # https://github.com/AnomalyInnovations/serverless-bundle#options
+  bundle:
     packager: yarn
 
 functions:
