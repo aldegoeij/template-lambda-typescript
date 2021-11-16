@@ -19,7 +19,7 @@
     "@middy/http-json-body-parser": "^1.4.0",
     "@middy/secrets-manager": "^1.4.0",
     "@sentry/serverless": "^5.23.0",
-    "aws-sdk": "^2.751.0",
+    "aws-sdk": "^2.814.0",
     "aws-xray-sdk-core": "^3.2.0",
     "http-errors": "^1.8.0"
   },
